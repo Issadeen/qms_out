@@ -1,0 +1,175 @@
+/* Enhanced Dark Theme CSS for QMS App */
+
+/* Dark Theme Variables */
+:root {
+  --ion-color-primary: #f44336;
+  --ion-color-primary-rgb: 244, 67, 54;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #d73a2f;
+  --ion-color-primary-tint: #f5574b;
+}
+
+/* Dark Theme Class */
+.dark-theme {
+  /* Background Colors */
+  --ion-background-color: #121212 !important;
+  --ion-background-color-rgb: 18, 18, 18 !important;
+  --ion-text-color: #ffffff !important;
+  --ion-text-color-rgb: 255, 255, 255 !important;
+  --ion-border-color: #333333 !important;
+  
+  /* Component Colors */
+  --ion-item-background: #1e1e1e !important;
+  --ion-toolbar-background: #1e1e1e !important;
+  --ion-tab-bar-background: #1e1e1e !important;
+  --ion-card-background: #1e1e1e !important;
+  
+  /* Color Steps */
+  --ion-color-step-50: #1e1e1e !important;
+  --ion-color-step-100: #2a2a2a !important;
+  --ion-color-step-150: #363636 !important;
+  --ion-color-step-200: #414141 !important;
+  --ion-color-step-250: #4d4d4d !important;
+  --ion-color-step-300: #595959 !important;
+  --ion-color-step-350: #656565 !important;
+  --ion-color-step-400: #717171 !important;
+  --ion-color-step-450: #7d7d7d !important;
+  --ion-color-step-500: #898989 !important;
+  --ion-color-step-550: #949494 !important;
+  --ion-color-step-600: #a0a0a0 !important;
+  --ion-color-step-650: #acacac !important;
+  --ion-color-step-700: #b8b8b8 !important;
+  --ion-color-step-750: #c4c4c4 !important;
+  --ion-color-step-800: #d0d0d0 !important;
+  --ion-color-step-850: #dbdbdb !important;
+  --ion-color-step-900: #e7e7e7 !important;
+  --ion-color-step-950: #f3f3f3 !important;
+}
+
+/* Direct Application of Dark Theme Styles */
+.dark-theme body {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+}
+
+.dark-theme ion-content {
+  --background: #121212 !important;
+  --color: #ffffff !important;
+}
+
+.dark-theme ion-header,
+.dark-theme ion-toolbar {
+  --background: #1e1e1e !important;
+  --color: #ffffff !important;
+  border-color: #333333 !important;
+}
+
+.dark-theme ion-title,
+.dark-theme ion-label,
+.dark-theme ion-text {
+  color: #ffffff !important;
+}
+
+/* Modern Card Styles */
+ion-card {
+  border-radius: 12px !important;
+  margin: 14px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+  overflow: hidden !important;
+}
+
+.dark-theme ion-card {
+  background: #1e1e1e !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid #333333 !important;
+}
+
+ion-card:active {
+  transform: scale(0.98) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+ion-card-header {
+  padding: 16px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
+
+.dark-theme ion-card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+ion-card-content {
+  padding: 16px !important;
+}
+
+/* QMS Queue Card Styles */
+page-queue-list .qcard {
+  border: none !important;
+  background: #ffffff !important;
+  margin-bottom: 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 10px rgba(247, 112, 102, 0.2) !important;
+}
+
+.dark-theme page-queue-list .qcard {
+  background: #1e1e1e !important;
+  box-shadow: 0 4px 10px rgba(247, 112, 102, 0.1) !important;
+}
+
+page-queue-list .qcard ion-card-header {
+  text-align: center !important;
+  font-weight: 700 !important;
+  background-color: #f44336 !important;
+  color: white !important;
+  padding: 14px !important;
+  font-size: 17px !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+/* Dark Theme Toggle Button */
+.theme-toggle {
+  position: fixed !important;
+  top: 10px !important;
+  right: 10px !important;
+  z-index: 9999 !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background-color: #f44336 !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.dark-theme .theme-toggle {
+  background: #333333 !important;
+}
+
+/* Form Fields */
+.dark-theme ion-item {
+  --background: #1e1e1e !important;
+  --border-color: #333333 !important;
+  --color: #ffffff !important;
+}
+
+.dark-theme ion-input, 
+.dark-theme ion-textarea, 
+.dark-theme ion-select {
+  --color: #ffffff !important;
+}
+
+/* Text Adjustments */
+.dark-theme .text-primary {
+  color: #f5574b !important;
+}
+
+.dark-theme span[ion-text] {
+  color: #e0e0e0 !important;
+}

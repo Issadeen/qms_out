@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <script type="text/javascript" src="cordova.js"></script>
+  <meta charset="UTF-8">
+  <title>Ionic App</title>
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4e8ef7">
+  
+  <style>
+    /* THEME WITH CSS VARIABLES */
+    :root {
+      --color-bg: #ffffff;
+      --color-bg-alt: #f8f9fa;
+      --color-bg-alt2: #e9ecef;
+      --color-surface: #ffffff;
+      --color-surface-alt: #f8f9fa;
+      --color-border: #dee2e6;
+      --color-border-alt: #dee2e6;
+      --color-text: #222222;
+      --color-text-invert: #ffffff;
+      --color-accent: #007bff;
+      --color-accent-alt: #0056b3;
+      --color-danger: #dc3545;
+      --color-success: #28a745;
+      --color-success-alt: #27ae60;
+      --radius-card: 12px;
+      --transition-fast: 0.2s ease;
+    }
+    html.dark :root, html.dark, .dark {
+      --color-bg: #1a1a1a;
+      --color-bg-alt: #2d2d2d;
+      --color-bg-alt2: #3a3a3a;
+      --color-surface: #2d2d2d;
+      --color-surface-alt: #3a3a3a;
+      --color-border: #404040;
+      --color-border-alt: #404040;
+      --color-text: #ffffff;
+      --color-accent: #dc3545;
+      --color-accent-alt: #c82333;
+      --color-success: #27ae60;
+      --color-success-alt: #27ae60;
+    }
+    html, body { background-color: var(--color-bg); color: var(--color-text); }
+    ion-app { background-color: var(--color-bg); color: var(--color-text); }
+    ion-content, .content, .scroll-content { background-color: var(--color-bg); color: var(--color-text); }
+    ion-card, .card { background-color: var(--color-surface-alt); color: var(--color-text); border: 1px solid var(--color-border); border-radius: var(--radius-card); margin: 10px; transition: background-color var(--transition-fast); }
+    ion-card-header, .card-header { background-color: var(--color-bg-alt2); color: var(--color-text); padding: 16px; border-bottom: 1px solid var(--color-border); font-weight: bold; }
+    ion-toolbar, .toolbar, ion-header, .header { background-color: var(--color-bg-alt); color: var(--color-text); border-bottom: 1px solid var(--color-border); }
+    .toolbar-title { font-weight: bold; }
+    .searchbar-input { background-color: transparent; padding: 12px; }
+    .searchbar-search-icon, .searchbar-clear-icon { color: var(--color-accent); }
+    .dark .searchbar-search-icon, .dark .searchbar-clear-icon { color: var(--color-accent); }
+    ion-item, .item { background-color: var(--color-surface); border: 1px solid var(--color-border); }
+    .available { color: var(--color-success) !important; }
+    .unavailable { color: var(--color-danger) !important; }
+    ion-button, button { background-color: var(--color-accent); color: var(--color-text-invert) !important; border-radius: 8px; padding: 10px 20px; font-weight: bold; transition: background-color var(--transition-fast); }
+    ion-button:hover, button:hover { filter: brightness(1.05); }
+    .dark ion-button, .dark button { background-color: var(--color-accent); }
+    /* BACK TO TOP ARROW */
+    #back-to-top-arrow { position: fixed !important; bottom: 80px !important; right: 20px !important; z-index: 9998 !important; width: 55px !important; height: 55px !important; border-radius: 50% !important; background: linear-gradient(135deg, var(--color-accent), var(--color-accent-alt)) !important; color: var(--color-text-invert) !important; border: 2px solid var(--color-text-invert) !important; font-size: 26px !important; font-weight: bold !important; box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important; display: none; align-items: center; justify-content: center; opacity: 0; transform: translateY(20px); transition: opacity 0.3s ease, transform 0.3s ease !important; }
+    #back-to-top-arrow.visible { display: flex !important; opacity: 1 !important; transform: translateY(0) !important; }
+    /* Skeleton & Diff Highlight */
+    .skeleton { position: relative; overflow: hidden; background: linear-gradient(90deg, var(--color-bg-alt) 0px, var(--color-bg-alt2) 40px, var(--color-bg-alt) 80px); background-size: 600px 100%; animation: shimmer 1.2s infinite linear; color: transparent !important; }
+    @keyframes shimmer { 0% { background-position: -600px 0; } 100% { background-position: 600px 0; } }
+    .diff-flash { animation: flash-bg 1.4s ease 1; }
+    @keyframes flash-bg { 0% { box-shadow: 0 0 0 0 rgba(255,215,0,0.8); } 70% { box-shadow: 0 0 0 8px rgba(255,215,0,0); } 100% { box-shadow: none; } }
+
+      /* Optimistic pending cards */
+      ion-card.qcard.optimistic-pending {
+        position: relative;
+        opacity: 0.75;
+        border: 2px dashed var(--color-accent);
+        background: repeating-linear-gradient(45deg, var(--color-bg-alt), var(--color-bg-alt) 10px, var(--color-bg) 10px, var(--color-bg) 20px);
+        transition: opacity 0.3s;
+      }
+      ion-card.qcard.optimistic-pending .optimistic-meta {
+        font-size: 12px;
+        color: var(--color-accent);
+        letter-spacing: .5px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      ion-card.qcard.optimistic-pending .optimistic-spinner {
+        width: 18px; height: 18px;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 4px 0 2px;
+      }
+      @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    /* Live region for accessibility */
+    #qms-live-region { position:absolute; top:-9999px; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  </style>
+  
+  <link href="build/main.css" rel="stylesheet">
+</head>
+<body>
+  <div id="back-to-top-arrow" title="Back to Top">↑</div>
+  <div id="qms-live-region" aria-live="polite" aria-atomic="true"></div>
+  <ion-app></ion-app>
+  <script type="text/javascript" src="cordova.js"></script>
+  <script src="build/polyfills.js"></script>
+  <script src="build/vendor.js"></script>
+  <script src="build/main.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/queue-model.js"></script>
+  <script src="js/diff-highlight.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/diagnostics.js"></script>
+  <script src="js/optimistic-dom-link.js"></script>
+  <script>
+    // Register enhanced service worker & listen for updates
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('service-worker.js').then(reg => {
+        if(reg.waiting){ notifyUpdate(); }
+        reg.addEventListener('updatefound', () => {
+          const sw = reg.installing;
+          if(sw){
+            sw.addEventListener('statechange', () => {
+              if(sw.state === 'installed' && navigator.serviceWorker.controller){
+                notifyUpdate();
+              }
+            });
+          }
+        });
+      }).catch(e=>console.log('SW register failed', e));
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if(refreshing) return; refreshing = true; window.location.reload();
+      });
+    }
+    function notifyUpdate(){
+      const bar = document.createElement('div');
+      bar.textContent = 'New version available - tap to update';
+      bar.style.position='fixed'; bar.style.bottom='0'; bar.style.left='0'; bar.style.right='0';
+      bar.style.background='var(--color-accent)'; bar.style.color='var(--color-text-invert)';
+      bar.style.padding='10px'; bar.style.textAlign='center'; bar.style.cursor='pointer'; bar.style.zIndex='99999';
+      bar.addEventListener('click', ()=>{
+        navigator.serviceWorker.getRegistration().then(reg=>{ if(reg && reg.waiting){ reg.waiting.postMessage({ type:'SKIP_WAITING' }); }});
+      });
+      document.body.appendChild(bar);
+    }
+  </script>
+
+  <script>
+    // FINAL FIX SCRIPT - IONIC SCROLL ELEMENT
+    (function() {
+      console.log('🚀 Final Fix Script Initializing...');
+
+      let backToTopArrow;
+      let toolbarBtn; // <ion-button> in header
+      let menuToggle; // <ion-toggle> inside side menu
+      let isDark = false;
+      const scrollThreshold = 200;
+
+    function applyTheme(dark) {
+        isDark = !!dark;
+        document.documentElement.classList.toggle('dark', isDark);
+        localStorage.setItem('qms-theme', isDark ? 'dark' : 'light');
+        // Update UI controls if present
+        if (toolbarBtn) {
+      toolbarBtn.textContent = isDark ? '☀️' : '🌙';
+      toolbarBtn.setAttribute('title', isDark ? 'Switch to Light' : 'Switch to Dark');
+        }
+        if (menuToggle) {
+          // Reflect state without re-triggering change
+          if (typeof menuToggle.checked !== 'undefined') menuToggle.checked = isDark;
+        }
+      }
+
+      function loadTheme() {
+        const saved = localStorage.getItem('qms-theme');
+        applyTheme(saved === 'dark');
+      }
+
+      function createToolbarButton(toolbar) {
+        if (!toolbar || toolbarBtn) return; // already created
+        // Create a plain button to ensure compatibility
+        const btn = document.createElement('button');
+        btn.setAttribute('id', 'qms-theme-btn');
+        btn.setAttribute('type', 'button');
+        btn.style.background = 'transparent';
+        btn.style.border = 'none';
+        btn.style.fontSize = '18px';
+        btn.style.padding = '8px';
+        btn.style.cursor = 'pointer';
+        btn.style.marginLeft = '8px';
+        btn.textContent = isDark ? '☀️' : '🌙';
+        btn.setAttribute('title', 'Switch theme');
+        // Append at end of toolbar
+        toolbar.appendChild(btn);
+        toolbarBtn = btn;
+        toolbarBtn.addEventListener('click', () => applyTheme(!isDark));
+      }
+
+      function createMenuToggle(menu) {
+        if (!menu || menuToggle) return;
+        // Append a simple checkbox row near the end of the menu
+        const content = menu.querySelector('ion-content') || menu;
+        const wrapper = document.createElement('div');
+        wrapper.style.padding = '12px 16px';
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'space-between';
+        wrapper.style.borderTop = '1px solid rgba(0,0,0,0.1)';
+        const label = document.createElement('span');
+        label.textContent = 'Dark Mode';
+        label.style.fontSize = '16px';
+        const toggle = document.createElement('input');
+        toggle.type = 'checkbox';
+        toggle.id = 'qms-theme-toggle';
+        toggle.checked = isDark;
+        toggle.style.transform = 'scale(1.2)';
+        wrapper.appendChild(label);
+        wrapper.appendChild(toggle);
+        content.appendChild(wrapper);
+        menuToggle = toggle;
+        toggle.addEventListener('change', (e) => applyTheme(!!e.target?.checked));
+      }
+
+      function createMenuTribute() {
+        if (document.querySelector('#qms-tribute')) return; // already added
+        const tribute = document.createElement('div');
+        tribute.id = 'qms-tribute';
+        tribute.textContent = 'moded by Issaerium tm';
+        // Fixed overlay at bottom left when menu is visible
+        tribute.style.position = 'fixed';
+        tribute.style.left = '10px';
+        tribute.style.bottom = '10px';
+        tribute.style.zIndex = '10001';
+        tribute.style.fontSize = '10px';
+        tribute.style.opacity = '0.6';
+        tribute.style.pointerEvents = 'none';
+        tribute.style.color = '#ffffff';
+        tribute.style.textShadow = '0 1px 2px rgba(0,0,0,0.5)';
+        tribute.style.fontFamily = 'monospace';
+        tribute.style.display = 'none'; // hidden by default
+        document.body.appendChild(tribute);
+        
+        // Show/hide when menu opens/closes
+        const observer = new MutationObserver(() => {
+          const menu = document.querySelector('ion-menu');
+          if (menu && menu.classList.contains('show-menu')) {
+            tribute.style.display = 'block';
+          } else {
+            tribute.style.display = 'none';
+          }
+        });
+        observer.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['class'] });
+      }
+
+      function ensureThemeControls() {
+        // Try side menu first
+        const menu = document.querySelector('ion-menu');
+        if (menu) createMenuToggle(menu);
+        createMenuTribute(); // Always try to add tribute
+        // Then try header toolbar
+        const toolbar = document.querySelector('ion-header ion-toolbar') || document.querySelector('ion-toolbar');
+        if (toolbar) createToolbarButton(toolbar);
+      }      function setupListeners() {
+        backToTopArrow = document.getElementById('back-to-top-arrow');
+        if (backToTopArrow) {
+          backToTopArrow.addEventListener('click', () => {
+            const ionContent = document.querySelector('ion-content');
+            if (ionContent && ionContent.scrollToTop) {
+              ionContent.scrollToTop(500);
+            }
+          });
+        }
+
+        // Robust scroll listener setup
+        const intervalId = setInterval(() => {
+          const ionContent = document.querySelector('ion-content');
+          if (ionContent) {
+            clearInterval(intervalId);
+            console.log('Found ion-content, attaching scroll listener...');
+            ionContent.getScrollElement().then(scrollElement => {
+              scrollElement.addEventListener('scroll', () => {
+                if (scrollElement.scrollTop > scrollThreshold) {
+                  backToTopArrow?.classList.add('visible');
+                } else {
+                  backToTopArrow?.classList.remove('visible');
+                }
+              });
+              console.log('✅ Scroll listener attached successfully!');
+            });
+          }
+        }, 500);
+
+        // Re-try injecting controls until they exist
+        const uiInterval = setInterval(() => {
+          ensureThemeControls();
+          const menu = document.querySelector('ion-menu');
+          const tributePresent = !!document.querySelector('#qms-tribute');
+          const canStop = (toolbarBtn || menuToggle) && (!menu || tributePresent);
+          if (canStop) {
+            clearInterval(uiInterval);
+            console.log('✅ Theme controls (including tribute if menu exists) injected');
+          }
+        }, 500);
+      }
+
+      function init() {
+        loadTheme();
+        ensureThemeControls();
+        setupListeners();
+        console.log('✅ Final Fix Initialized.');
+      }
+
+      // Run init on multiple lifecycle events for reliability
+      document.addEventListener('DOMContentLoaded', init);
+      document.addEventListener('deviceready', init);
+      setTimeout(init, 1000); // Fallback init
+
+    })();
+  </script>
+</body>
+</html>

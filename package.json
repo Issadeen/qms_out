@@ -1,0 +1,62 @@
+{
+  "name": "qms-react-native",
+  "version": "1.0.0",
+  "description": "KPC QMS App - Modern React Native queue management system",
+  "main": "expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build": "expo export",
+    "build:android": "eas build --platform android",
+    "build:ios": "eas build --platform ios",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "@tanstack/react-query": "^5.8.4",
+    "expo": "~54.0.0",
+    "expo-linear-gradient": "^15.0.7",
+    "expo-local-authentication": "~17.0.7",
+    "expo-secure-store": "~15.0.7",
+    "expo-status-bar": "~3.0.8",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.4",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-web": "^0.21.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/json-schema": "^7.0.15",
+    "@types/prop-types": "^15.7.15",
+    "@types/react": "~18.2.14",
+    "@types/react-native": "^0.72.6",
+    "@types/semver": "^7.7.1",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^8.51.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-native": "^4.1.0",
+    "typescript": "^5.1.3"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "typescript",
+    "qms",
+    "queue-management"
+  ],
+  "author": "QMS Team",
+  "license": "MIT",
+  "private": true
+}

@@ -1,0 +1,297 @@
+Manifest-Version: 1.0
+Created-By: 17.0.11 (Oracle Corporation)
+
+Name: assets/www/build/main.js.map
+SHA1-Digest: CfmJtzJWouhtpkgyx2f6+xvwj9g=
+
+Name: assets/www/assets/img/trip/thumb/trip_1.jpg
+SHA1-Digest: /z+gP6Q96yqqi7BIWgUjrH5U/oI=
+
+Name: assets/www/build/0.js
+SHA1-Digest: BqDQQekMIUbqWUq/VtepT6+d/R8=
+
+Name: res/drawable-port-xxxhdpi-v4/screen.png
+SHA1-Digest: A+DTqm/4T1hE77hi8/adWg2vrxc=
+
+Name: assets/www/enhanced-dark-theme.css
+SHA1-Digest: 682agZZ6tu7Yxy47nJaU9qSCRRs=
+
+Name: res/drawable-land-xxxhdpi-v4/screen.png
+SHA1-Digest: JfPk7jp7HZ2wZgzDP6UT4UU0sZ4=
+
+Name: assets/www/assets/img/avatar.jpeg
+SHA1-Digest: 2WevJdl5dDtOJmZhQDBinIOHfIU=
+
+Name: assets/www/build/main.css.map
+SHA1-Digest: K+iMpCQsduglOsYkdIUQZQMtaDM=
+
+Name: assets/www/cordova-js-src/plugin/android/app.js
+SHA1-Digest: f7p1rHw6kBqunadJYz5vUi7ZElM=
+
+Name: assets/www/index.html
+SHA1-Digest: 6uPQgnKLnllXruOt/alVUmz7GnI=
+
+Name: assets/www/assets/fonts/roboto-bold.woff2
+SHA1-Digest: lAbeJkaiUq8VPjx+CAcdpT2opZE=
+
+Name: assets/www/assets/fonts/roboto-medium.woff2
+SHA1-Digest: ODo5Z9q460GSWdFMdVeS2alYY0Y=
+
+Name: assets/www/assets/fonts/roboto-regular.ttf
+SHA1-Digest: iee/JxkNYse1CNySxwEsEYBFj04=
+
+Name: assets/www/assets/fonts/roboto-medium.woff
+SHA1-Digest: MIeyABWSUXDmXPK2wf2/DNTsOzs=
+
+Name: assets/www/build/3.js
+SHA1-Digest: 2uaL2vHhJJal5akx2j6dJu/VRFQ=
+
+Name: assets/www/assets/fonts/roboto-regular.woff2
+SHA1-Digest: xdU+YqR2Fpus2XRZ+BcsB3aYjYw=
+
+Name: assets/www/build/sw-toolbox.js
+SHA1-Digest: T1qyFAGAzjWMGMIjeesugfjtGAw=
+
+Name: assets/www/assets/fonts/ionicons.eot
+SHA1-Digest: UzcGPr5qZbRxE/eJuC4MlnXMRNc=
+
+Name: assets/www/assets/fonts/noto-sans-regular.woff
+SHA1-Digest: q+qHOMXsbtOmlCzvXEiKE9MOx+E=
+
+Name: res/drawable-xxxhdpi-v4/icon.png
+SHA1-Digest: fexvsoUAuw1/0POPh2Lj0f0tBI8=
+
+Name: res/drawable-land-mdpi-v4/screen.png
+SHA1-Digest: vQGW146iTs4AKrKgQIVRTmhVIQ8=
+
+Name: resources.arsc
+SHA1-Digest: cRRrRVqfCkJuKCkcjSSA2tD0gSc=
+
+Name: assets/www/assets/img/profile.png
+SHA1-Digest: oDKYA4QCloVAA0Jl7p2Y6oLn9GQ=
+
+Name: assets/www/assets/fonts/roboto-bold.ttf
+SHA1-Digest: yTy262p1p/QxL9K6/lurf7rfEtk=
+
+Name: assets/www/assets/img/trip/thumb/trip_6.jpg
+SHA1-Digest: XrdSgndKRAsxJ54iTnUcn03J7oo=
+
+Name: AndroidManifest.xml
+SHA1-Digest: 0PZVVoCEKVLXSDF2owG0biN1Alg=
+
+Name: assets/www/build/2.js.map
+SHA1-Digest: C6Nl51AdwrF5ws9Qf5TbNTenQb8=
+
+Name: assets/www/service-worker.js
+SHA1-Digest: 28j9nLoFqBQr8EvyM4gxh50w0HU=
+
+Name: assets/www/build/2.js
+SHA1-Digest: IH8moAgd8XHos/i5HBJA/lj47no=
+
+Name: assets/www/assets/fonts/roboto-light.woff
+SHA1-Digest: mHcxYm/u/BQM8X//Qb0yEzEtb5k=
+
+Name: assets/www/cordova-js-src/android/nativeapiprovider.js
+SHA1-Digest: FVwW8q5pXNyqdiSUoAgfev5NTHs=
+
+Name: res/xml/config.xml
+SHA1-Digest: 2Z3/k3URgYuO9yGffmZrpkg1AAs=
+
+Name: assets/www/build/3.js.map
+SHA1-Digest: UCcKP03jEPsWZ4o+5awnbTlYf4U=
+
+Name: assets/www/assets/fonts/roboto-regular.woff
+SHA1-Digest: STKhtVvU86PcyV2zPsB7pynobGE=
+
+Name: assets/www/assets/img/trip/thumb/trip_5.jpg
+SHA1-Digest: zHS8mhTVKyGf4l8XqMAI6E94G70=
+
+Name: assets/www/assets/fonts/roboto-medium.ttf
+SHA1-Digest: YgSBN0xwXw5uOH0oHmaislBhFEU=
+
+Name: assets/www/build/main.css
+SHA1-Digest: Hm7Ys46CNuN1UtF5r0a9rjcj/4s=
+
+Name: assets/www/assets/img/trip/thumb/trip_8.jpg
+SHA1-Digest: c2uTrQn7XRcMHlphxayfLoTo3c4=
+
+Name: assets/www/manifest.json
+SHA1-Digest: QfHSJQZ3DWubVL5j9tWLfB65Suo=
+
+Name: lib/armeabi/libsqlc-native-driver.so
+SHA1-Digest: w0m7GkpWTJ7ul8fGO//daLw8k6o=
+
+Name: lib/x86_64/libsqlc-native-driver.so
+SHA1-Digest: SenuQsBnyoyrBmunxXF5PCZ+zTs=
+
+Name: assets/www/assets/img/trip/thumb/trip_3.jpg
+SHA1-Digest: NsZcb8MLo5nTFbY/rsqG9Vokf+s=
+
+Name: res/drawable-land-ldpi-v4/screen.png
+SHA1-Digest: Wg/F7Q1Caj3HHnYuYfrbeoOx0C4=
+
+Name: assets/www/assets/fonts/ionicons.ttf
+SHA1-Digest: D3lWcE/mG0nEHqGiIFEkD3AKK0Q=
+
+Name: res/drawable-mdpi-v4/icon.png
+SHA1-Digest: jZHrxHjJOwdPN4vbmDYwRMZfMpc=
+
+Name: assets/www/assets/fonts/ionicons.woff2
+SHA1-Digest: eApJg7kU998bJ9ej8VCz3OJ63ao=
+
+Name: assets/www/cordova-js-src/exec.js
+SHA1-Digest: zC0fBe0s/SpGce1vXhhq+pTqaOU=
+
+Name: assets/www/plugins/cordova-plugin-statusbar/www/statusbar.js
+SHA1-Digest: HziXpqJBPTHIl6qne1lRWvRuots=
+
+Name: res/drawable-port-mdpi-v4/screen.png
+SHA1-Digest: FSheU0/siIYopoFGDlpXrUnoT6M=
+
+Name: assets/www/build/vendor.js
+SHA1-Digest: cEFdQEtcMn+QiHGKpz982klRTsQ=
+
+Name: assets/www/cordova-js-src/platform.js
+SHA1-Digest: /mJ5H2qTR9Bi2LjUspEVgxlBB+g=
+
+Name: res/drawable-port-ldpi-v4/screen.png
+SHA1-Digest: Sl2jjGA862qUFQuDvxExALpC6go=
+
+Name: assets/www/enhanced-dark-theme.js
+SHA1-Digest: 2cq2ldY8xSFewsheZZrefzrjI/8=
+
+Name: assets/www/cordova.js
+SHA1-Digest: QKGXEG0iC3u5NywsIh8kndmcf3Y=
+
+Name: res/drawable-hdpi-v4/icon.png
+SHA1-Digest: cs0FwzHLicafgycUdiBaq5zKc/Y=
+
+Name: res/drawable-land-xhdpi-v4/screen.png
+SHA1-Digest: PFDp4su3BPsiO0JdjhvH/QB01RI=
+
+Name: assets/www/assets/fonts/noto-sans.scss
+SHA1-Digest: EploxEmrzS6JjXiek25ICv5xzQE=
+
+Name: res/drawable-land-xxhdpi-v4/screen.png
+SHA1-Digest: +dtGqBNgfCkfLaVOvGWMj3qD2Pc=
+
+Name: assets/www/assets/fonts/ionicons.woff
+SHA1-Digest: 0ocalkrbgCf5t2XDpT+V0TkvKz8=
+
+Name: assets/www/cordova-js-src/android/promptbasednativeapi.js
+SHA1-Digest: WY63KRIwUfBJT7ADJajHaAGlUMA=
+
+Name: assets/www/assets/fonts/noto-sans-regular.ttf
+SHA1-Digest: gwlTxnjmpQaXEIqch9IpzvEwl1o=
+
+Name: lib/x86/libsqlc-native-driver.so
+SHA1-Digest: WJraupParXWY25AYMUN1LxcbMpY=
+
+Name: res/drawable-xhdpi-v4/icon.png
+SHA1-Digest: BuOMxN8YyPDb+1a4nGyA0C8v2XI=
+
+Name: assets/www/assets/img/trip/thumb/trip_7.jpg
+SHA1-Digest: KNx+wQvxIrlrCft9RD40npz2lL4=
+
+Name: assets/www/plugins/cordova-plugin-splashscreen/www/splashscreen.js
+SHA1-Digest: n2E0W8B/grOxM2ORx/haAYOWIcA=
+
+Name: lib/arm64-v8a/libsqlc-native-driver.so
+SHA1-Digest: KpHRh68rumofn8Jl/hUw2h8nFm4=
+
+Name: res/drawable-port-xxhdpi-v4/screen.png
+SHA1-Digest: ME+JSz3xSsGSEInJZJjmxWlVwAg=
+
+Name: assets/www/assets/fonts/noto-sans-bold.ttf
+SHA1-Digest: VjvZgsz1sFxiNMQKV1jdovGRYPs=
+
+Name: assets/www/assets/fonts/ionicons.scss
+SHA1-Digest: ywH774KHMjwBltiJrD9aODt/wZo=
+
+Name: assets/www/cordova_plugins.js
+SHA1-Digest: 7sGDSCJrzdrNpmIQA6Iap/s4Ucs=
+
+Name: assets/www/plugins/cordova-plugin-device/www/device.js
+SHA1-Digest: 1GfO/IDwwyLde/veo05ABQB5yTk=
+
+Name: assets/www/build/1.js.map
+SHA1-Digest: mW0NbhGsDVT7KiBdHVi6zI529Yk=
+
+Name: assets/www/build/0.js.map
+SHA1-Digest: wKDKqGcmuoooCpZDYgya0IroXiU=
+
+Name: assets/www/plugins/ionic-plugin-keyboard/www/android/keyboard.js
+SHA1-Digest: gUndp8NYZgEtqC5lnJ47rGaPCYc=
+
+Name: res/drawable-ldpi-v4/icon.png
+SHA1-Digest: tlY19zJu5bXI9PAHmFXnEKlp8r8=
+
+Name: res/drawable-xxhdpi-v4/icon.png
+SHA1-Digest: i16XSnzGfmyqd8eoBW/q5Ajy6OM=
+
+Name: res/drawable-land-hdpi-v4/screen.png
+SHA1-Digest: TupEkXH31wQiygRAtzBeHvK8keI=
+
+Name: assets/www/assets/fonts/roboto.scss
+SHA1-Digest: mVn8X55jqWJGRnt+TQeFdxp1qk4=
+
+Name: res/drawable-port-hdpi-v4/screen.png
+SHA1-Digest: Bap5sNgazatPA3ZCsST08p3OzIY=
+
+Name: assets/www/build/main.js
+SHA1-Digest: ZX31X1eP0UW988YRwe5RYl1liK0=
+
+Name: assets/www/build/polyfills.js
+SHA1-Digest: 7Uo4Nn1kV2s9IG3ilGu3Bkej+zo=
+
+Name: assets/www/assets/img/trip/thumb/trip_4.jpg
+SHA1-Digest: I2GJKG40IYODcGxi0KCWKR/pP9c=
+
+Name: assets/www/assets/icon/favicon.ico
+SHA1-Digest: sUi0ev+k0Ktg9eQFn5yu4Kof5sw=
+
+Name: assets/www/assets/img/logo.png
+SHA1-Digest: tH3GsyeIArdRQ/ZxBdIXlEUtJeE=
+
+Name: assets/www/assets/img/ionic3-ico.png
+SHA1-Digest: 4E1SDnnWBG0kLU1ZJCJTB0mguyQ=
+
+Name: assets/www/plugins/cordova-sqlite-storage/www/SQLitePlugin.js
+SHA1-Digest: knkV98omj9KJCY45IdW9maWCC5s=
+
+Name: assets/www/build/1.js
+SHA1-Digest: 8tOa8wvfCzxtZ6NTOAGsDNcFaM0=
+
+Name: assets/www/assets/fonts/roboto-light.woff2
+SHA1-Digest: DB3NYdb13cdoFc6cDxLbTrimoBQ=
+
+Name: res/drawable-port-xhdpi-v4/screen.png
+SHA1-Digest: gtk8/FksUdE7CNyAkfaHUSQ+oQc=
+
+Name: assets/www/assets/fonts/roboto-bold.woff
+SHA1-Digest: YieZSJ6X5BjIlny/HgEdzoNOFPo=
+
+Name: assets/www/assets/fonts/roboto-light.ttf
+SHA1-Digest: 8joEE/3XARd1LPc2edLFhnCV6qw=
+
+Name: assets/www/assets/img/bg.jpg
+SHA1-Digest: hFaLGzk2jOcXxaTburz2h7wUESU=
+
+Name: assets/www/assets/img/trip/thumb/trip_2.jpg
+SHA1-Digest: ZCspzD3dIr4LT3p+M/06EABZxWA=
+
+Name: assets/www/assets/fonts/ionicons.svg
+SHA1-Digest: Mbg/nrqV2St/gvxMbA92Hnu19Z8=
+
+Name: lib/armeabi-v7a/libsqlc-native-driver.so
+SHA1-Digest: FQHPAS6O753SXutZrDXKQmCoBCA=
+
+Name: classes.dex
+SHA1-Digest: X6X0NP33nGAEpkTVg5qqRrbCXMY=
+
+Name: assets/www/assets/fonts/noto-sans-bold.woff
+SHA1-Digest: Ize8i9CbRr1ngscDVtBHRabDlKc=
+
+Name: assets/www/build/vendor.js.map
+SHA1-Digest: NmdFCZ8ZerTMXjbN9Tncm918A6I=
+

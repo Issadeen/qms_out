@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, BackHandler } from 'react-native';
 
 import { ThemeProvider } from './src/theme/ThemeContext';
 import SplashScreen from './src/components/SplashScreen';
@@ -14,6 +14,7 @@ export default function App() {
   const [currentDepot, setCurrentDepot] = useState<string>('');
   const [orderType, setOrderType] = useState<'Export' | 'Local' | null>(null);
   const [showDepotSelection, setShowDepotSelection] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // New state to track authentication
 
   // Handle splash screen completion
   const handleSplashComplete = () => {
@@ -50,6 +51,7 @@ export default function App() {
   const handleLoginSuccess = (depot: string) => {
     setCurrentDepot(depot);
     setIsLoggedIn(true);
+    setIsAuthenticated(true);
     setShowDepotSelection(false); // Hide depot selection when login is complete
   };
 
@@ -59,16 +61,18 @@ export default function App() {
 
   const handleBackToLogin = () => {
     setIsLoggedIn(false);
+    setIsAuthenticated(false);
     setCurrentDepot('');
     setOrderType(null);
     setShowDepotSelection(false);
   };
 
   const handleBackToDepotSelection = () => {
-    setIsLoggedIn(false); // Go back to LoginScreen 
-    setShowDepotSelection(true); // But show depot selection instead of login form
+    // Stay authenticated but go back to depot selection
+    setIsLoggedIn(false); // This will show LoginScreen
+    setShowDepotSelection(true); // But force it to show depot selection
     setOrderType(null);
-    // Keep the currentDepot so it can be pre-selected in the carousel
+    // Keep isAuthenticated true and currentDepot so depot selection works
   };
 
   const handleBackToOrderType = () => {
@@ -77,9 +81,44 @@ export default function App() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setIsAuthenticated(false);
     setCurrentDepot('');
     setOrderType(null);
+    setShowDepotSelection(false);
   };
+
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      // If we're loading, don't allow back
+      if (isLoading) {
+        return true;
+      }
+
+      // If we're on the queue list screen, go back to order type
+      if (isLoggedIn && orderType) {
+        handleBackToOrderType();
+        return true; // Prevent default behavior (closing app)
+      }
+
+      // If we're on order type screen, go back to depot selection
+      if (isLoggedIn && !orderType) {
+        handleBackToDepotSelection();
+        return true;
+      }
+
+      // If we're on login/depot selection screen, allow app to close
+      // Return false to allow default behavior
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [isLoading, isLoggedIn, orderType]);
 
   return (
     <ThemeProvider>
@@ -94,6 +133,7 @@ export default function App() {
             onLoginSuccess={handleLoginSuccess} 
             initialShowDepotSelection={showDepotSelection}
             initialSelectedDepot={currentDepot}
+            isAuthenticated={isAuthenticated}
           />
         ) : !orderType ? (
           <OrderTypeScreen 

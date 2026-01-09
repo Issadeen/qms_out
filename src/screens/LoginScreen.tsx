@@ -15,6 +15,7 @@ import {
   Image,
   ScrollView,
   SafeAreaView,
+  Modal,
   Switch,
 } from 'react-native';
 
@@ -32,9 +33,10 @@ interface LoginScreenProps {
   onLoginSuccess: (depot: string) => void;
   initialShowDepotSelection?: boolean;
   initialSelectedDepot?: string;
+  isAuthenticated?: boolean;
 }
 
-const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initialSelectedDepot }: LoginScreenProps) => {
+const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initialSelectedDepot, isAuthenticated = false }: LoginScreenProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -43,6 +45,7 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
   const [rememberMe, setRememberMe] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [showBiometricModal, setShowBiometricModal] = useState(false);
   const [isAutoLogging, setIsAutoLogging] = useState(false);
   
   // Animation values
@@ -52,6 +55,8 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
   
   // Theme
   const { colors, typography, spacing, borderRadius, shadows, isDark, toggleTheme } = useTheme();
+
+
 
   const depots = [
     { id: 'eldoret', name: 'Eldoret', baseUrl: 'https://qmseldoret.kpc.co.ke/' },
@@ -63,6 +68,12 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // If already authenticated (coming back from OrderTypeScreen), just show depot selection
+        if (isAuthenticated && initialShowDepotSelection) {
+          setShowDepotSelection(true);
+          return;
+        }
+
         // Check biometric availability
         const biometricAvail = await authService.isBiometricAvailable();
         setBiometricAvailable(biometricAvail);
@@ -77,8 +88,8 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
           setSelectedDepot(settings.lastDepot);
         }
 
-        // Attempt auto-login if remember me is enabled
-        if (settings.rememberMe) {
+        // Attempt auto-login if remember me is enabled (only if not already authenticated)
+        if (settings.rememberMe && !isAuthenticated) {
           setIsAutoLogging(true);
           console.log('Attempting auto-login...');
           
@@ -133,7 +144,7 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
     ]).start();
 
     initializeAuth();
-  }, []);
+  }, [isAuthenticated, initialShowDepotSelection]);
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -199,6 +210,40 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
     onLoginSuccess(selectedDepot);
   };
 
+  // Trigger biometric auth and handle results; show modal on cancel/failure
+  const triggerBiometricAuth = async () => {
+    try {
+      const result = await authService.authenticateWithBiometric();
+      if (result && result.success) {
+        const autoLoginResult = await authService.attemptAutoLogin();
+        if (autoLoginResult.success) {
+          if (autoLoginResult.depot) {
+            onLoginSuccess(autoLoginResult.depot);
+            return;
+          } else if (autoLoginResult.requiresDepotSelection) {
+            setShowDepotSelection(true);
+            return;
+          }
+        }
+        // If auto-login didn't succeed even after biometrics, show modal so user can retry or use PIN
+        setShowBiometricModal(true);
+      } else {
+        // Biometric cancelled/failed
+        setShowBiometricModal(true);
+      }
+    } catch (err) {
+      console.error('Biometric auth error:', err);
+      setShowBiometricModal(true);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    setShowDepotSelection(false);
+    setIsAutoLogging(false);
+    // Clear any auto-login state
+    console.log('Returning to login form from depot selection');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView 
@@ -230,6 +275,7 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+
           <Animated.View 
             style={[
               styles.animatedContainer,
@@ -246,23 +292,7 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
             <>
               {/* KPC Branded Header */}
               <View style={styles.brandedHeader}>
-                {/* KPC Logo Container */}
-                <View style={styles.logoContainer}>
-                  <View style={[styles.logoBackground, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
-                    <View style={[styles.logoInner, { backgroundColor: 'rgba(255,255,255,0.95)' }]}>
-                      <KPCLogo size={60} />
-                    </View>
-                  </View>
-                </View>
-
-                {/* Company & App Title */}
-                <Text style={[styles.companyName, { color: colors.textInverse }]}>
-                  Kenya Pipeline Company
-                </Text>
-                <Text style={[styles.modernTitle, { color: colors.textInverse }]}>
-                  KPC QMS App
-                </Text>
-                <View style={[styles.headerDivider, { backgroundColor: 'rgba(255,255,255,0.3)' }]} />
+                <KPCLogo size={60} />
                 <Text style={[styles.modernSubtitle, { color: colors.textSecondary }]}>
                   Secure Access Portal
                 </Text>
@@ -272,28 +302,57 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
               <View style={[
                 styles.glassmorphismContainer,
                 {
-                  backgroundColor: colors.glass,
-                  borderColor: colors.border,
+                  backgroundColor: isDark ? colors.surface : 'rgba(30, 41, 59, 0.95)', // solid dark background for visibility
+                  borderColor: isDark ? colors.border : 'rgba(255, 255, 255, 0.2)',
                 }
               ]}>
                 {/* Username Input with Animation */}
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.modernLabel, { color: colors.textPrimary }]}>
+                  {rememberMe && biometricAvailable && biometricEnabled && (
+                    <TouchableOpacity
+                      style={[styles.biometricManualBtn, { borderColor: colors.primary }]}
+                      onPress={async () => {
+                        try {
+                          const result = await authService.authenticateWithBiometric();
+                          if (result && result.success) {
+                            const autoLoginResult = await authService.attemptAutoLogin();
+                            if (autoLoginResult.success) {
+                              if (autoLoginResult.depot) {
+                                onLoginSuccess(autoLoginResult.depot);
+                                return;
+                              } else if (autoLoginResult.requiresDepotSelection) {
+                                setShowDepotSelection(true);
+                                return;
+                              }
+                            }
+                          } else {
+                            Alert.alert('Authentication', 'Biometric authentication was not completed. You can retry or login with your credentials.');
+                          }
+                        } catch (err) {
+                          console.error('Manual biometric auth error:', err);
+                          Alert.alert('Authentication Error', 'Biometric authentication failed. Please use your credentials.');
+                        }
+                      }}
+                    >
+                      <Text style={{ color: colors.primary }}>Authenticate with Biometrics</Text>
+                    </TouchableOpacity>
+                  )}
+                  <Text style={[styles.modernLabel, { color: isDark ? colors.textPrimary : '#f8fafc' }]}>
                     Username
                   </Text>
                   <TextInput
                     style={[
                       styles.modernInput,
                       {
-                        backgroundColor: colors.surface,
-                        borderColor: colors.border,
-                        color: colors.textPrimary,
+                        backgroundColor: isDark ? colors.backgroundSecondary : 'rgba(51, 65, 85, 0.6)',
+                        borderColor: isDark ? colors.border : 'rgba(148, 163, 184, 0.4)',
+                        color: isDark ? colors.textPrimary : '#f8fafc',
                       }
                     ]}
                     value={username}
                     onChangeText={setUsername}
                     placeholder="Enter your username"
-                    placeholderTextColor={colors.textSecondary}
+                    placeholderTextColor={isDark ? colors.textSecondary : 'rgba(203, 213, 225, 0.7)'}
                     autoCapitalize="none"
                     autoCorrect={false}
                     editable={!isLoading}
@@ -304,22 +363,22 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
 
                 {/* Password Input with Animation */}
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.modernLabel, { color: colors.textPrimary }]}>
+                  <Text style={[styles.modernLabel, { color: isDark ? colors.textPrimary : '#f8fafc' }]}>
                     Password
                   </Text>
                   <TextInput
                     style={[
                       styles.modernInput,
                       {
-                        backgroundColor: colors.surface,
-                        borderColor: colors.border,
-                        color: colors.textPrimary,
+                        backgroundColor: isDark ? colors.backgroundSecondary : 'rgba(51, 65, 85, 0.6)',
+                        borderColor: isDark ? colors.border : 'rgba(148, 163, 184, 0.4)',
+                        color: isDark ? colors.textPrimary : '#f8fafc',
                       }
                     ]}
                     value={password}
                     onChangeText={setPassword}
                     placeholder="Enter your password"
-                    placeholderTextColor={colors.textSecondary}
+                    placeholderTextColor={isDark ? colors.textSecondary : 'rgba(203, 213, 225, 0.7)'}
                     secureTextEntry
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -346,7 +405,7 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
                       thumbColor={rememberMe ? colors.background : colors.textSecondary}
                       ios_backgroundColor={colors.border}
                     />
-                    <Text style={[styles.optionText, { color: colors.textPrimary }]}>
+                    <Text style={[styles.optionText, { color: isDark ? colors.textPrimary : '#f8fafc' }]}>
                       Remember me
                     </Text>
                   </View>
@@ -364,7 +423,7 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
                         thumbColor={biometricEnabled ? colors.background : colors.textSecondary}
                         ios_backgroundColor={colors.border}
                       />
-                      <Text style={[styles.optionText, { color: colors.textPrimary }]}>
+                      <Text style={[styles.optionText, { color: isDark ? colors.textPrimary : '#f8fafc' }]}>
                         Use biometric authentication
                       </Text>
                     </View>
@@ -392,10 +451,16 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
                   )}
                 </TouchableOpacity>
 
-                <Text style={[styles.modernInfoText, { color: colors.textSecondary }]}>
-                  Credentials will be verified across all QMS depots
+                <Text style={[styles.modernInfoText, { color: isDark ? colors.textSecondary : 'rgba(203, 213, 225, 0.8)' }]}>
+                  Enter your KPC QMS credentials
+                  {'\n'}Credentials will be verified across all QMS depots
                 </Text>
               </View>
+
+              {/* Tribute */}
+              <Text style={[styles.tributeText, { color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.8)' }]}>
+                Crafted with 💙 by Issaerium
+              </Text>
             </>
           ) : (
             <DepotCarousel
@@ -407,8 +472,29 @@ const LoginScreen = ({ onLoginSuccess, initialShowDepotSelection = false, initia
               selectedDepot={selectedDepot}
               onDepotSelect={setSelectedDepot}
               onConfirm={handleDepotSelection}
+              onBack={handleBackToLogin}
             />
           )}
+          {/* Biometric Retry Modal */}
+          <Modal visible={showBiometricModal} transparent animationType="fade">
+            <View style={styles.modalBackdrop}>
+              <View style={[styles.modal, { backgroundColor: colors.surface, borderColor: colors.border }]}> 
+                <Text style={[styles.modalTitle, { color: colors.textPrimary }]}>Authentication</Text>
+                <Text style={[styles.modalMessage, { color: colors.textSecondary }]}>Biometric authentication was not completed. Choose an option:</Text>
+                <View style={styles.modalButtons}>
+                  <TouchableOpacity onPress={() => { setShowBiometricModal(false); triggerBiometricAuth(); }} style={[styles.modalBtn, { borderColor: colors.primary }]}>
+                    <Text style={{ color: colors.primary }}>Retry</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => { setShowBiometricModal(false); }} style={[styles.modalBtn, { borderColor: colors.border }]}>
+                    <Text style={{ color: colors.textPrimary }}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => { setShowBiometricModal(false); /* reveal PIN entry */ }} style={[styles.modalBtn, { borderColor: colors.primary }]}>
+                    <Text style={{ color: colors.primary }}>Use PIN</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </Animated.View>
         </ScrollView>
       </SimpleGradient>
@@ -446,15 +532,31 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    minHeight: screenHeight, // Use full screen height instead of fixed 700
-    paddingBottom: 50, // Extra bottom padding to prevent white space
+    paddingTop: 60,
+    paddingBottom: 60,
+    justifyContent: 'center',
   },
   animatedContainer: {
-    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  biometricManualBtn: {
+    marginTop: 8,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', justifyContent: 'center', alignItems: 'center' },
+  modal: { width: '85%', padding: 16, borderRadius: 12, borderWidth: 1 },
+  modalTitle: { fontSize: 16, fontWeight: '700', marginBottom: 8 },
+  modalMessage: { fontSize: 14, marginBottom: 12 },
+  modalButtons: { flexDirection: 'row', justifyContent: 'space-between' },
+  modalBtn: { padding: 10, borderRadius: 8, borderWidth: 1, minWidth: 80, alignItems: 'center', marginHorizontal: 4 },
   modernHeader: {
-    paddingTop: 80,
-    paddingBottom: 60,
+    paddingTop: 40,
+    paddingBottom: 24,
     alignItems: 'center',
     paddingHorizontal: 30,
   },
@@ -470,15 +572,15 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   glassmorphismContainer: {
-    flex: 1,
-    marginTop: 20,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-    paddingBottom: 60, // Increased bottom padding to fill space
+    marginVertical: 8,
+    width: '90%',
+    maxWidth: 720,
+    alignSelf: 'center',
+    borderRadius: 32,
+    paddingHorizontal: 28,
+    paddingTop: 20,
+    paddingBottom: 28,
     borderWidth: 1,
-    minHeight: 500, // Increased minimum height
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -489,18 +591,18 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   modernLabel: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 12,
+    marginBottom: 8,
     letterSpacing: 0.5,
   },
   modernInput: {
     borderWidth: 2,
     borderRadius: 16,
-    padding: 18,
+    padding: 14,
     fontSize: 16,
     fontWeight: '500',
     shadowColor: '#000',
@@ -516,9 +618,10 @@ const styles = StyleSheet.create({
   },
   modernButton: {
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
     alignItems: 'center',
-    marginTop: 24,
+    width: '100%',
+    marginTop: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -566,8 +669,8 @@ const styles = StyleSheet.create({
   },
   // KPC Branding Styles
   brandedHeader: {
-    paddingTop: 60,
-    paddingBottom: 40,
+    paddingTop: 10,
+    paddingBottom: 8,
     alignItems: 'center',
     paddingHorizontal: 30,
   },
@@ -672,6 +775,29 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontWeight: '500',
     flex: 1,
+  },
+  debugBox: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    padding: 8,
+    borderRadius: 8,
+    zIndex: 50,
+  },
+  debugText: {
+    color: '#fff',
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  tributeText: {
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 16,
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
 });
 

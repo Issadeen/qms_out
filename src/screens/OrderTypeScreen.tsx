@@ -7,7 +7,9 @@ import {
   StatusBar,
   Animated,
   Dimensions,
+  BackHandler,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../theme/ThemeContext';
 import ModernHeader from '../components/ModernHeader';
 import { SimpleGradient } from '../components/SimpleGradient';
@@ -62,11 +64,29 @@ const OrderTypeScreen = ({ depot, onOrderTypeSelected, onBack }: OrderTypeScreen
     ]).start();
   }, []);
 
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      if (onBack) {
+        onBack();
+        return true; // Prevent default behavior
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [onBack]);
+
   const handleOrderTypePress = (orderType: 'Export' | 'Local') => {
     // Show loading screen
     setIsLoading(true);
     
-    // Add a small animation before navigation
+    // Add a simple animation before navigation
     const scaleAnim = orderType === 'Export' ? scaleAnim1 : scaleAnim2;
     
     Animated.sequence([
@@ -85,7 +105,7 @@ const OrderTypeScreen = ({ depot, onOrderTypeSelected, onBack }: OrderTypeScreen
       setTimeout(() => {
         setIsLoading(false);
         onOrderTypeSelected(orderType);
-      }, 800);
+      }, 500);
     });
   };
   return (
@@ -122,11 +142,11 @@ const OrderTypeScreen = ({ depot, onOrderTypeSelected, onBack }: OrderTypeScreen
             Select the type of order you want to manage
           </Text>
 
-          {/* Export Order Type Card */}
+          {/* Export Order Type Card - Clean Design */}
           <Animated.View style={{ transform: [{ scale: scaleAnim1 }] }}>
             <TouchableOpacity
               style={[
-                styles.modernOrderCard,
+                styles.cleanOrderCard,
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
@@ -135,25 +155,23 @@ const OrderTypeScreen = ({ depot, onOrderTypeSelected, onBack }: OrderTypeScreen
               onPress={() => handleOrderTypePress('Export')}
               activeOpacity={0.8}
             >
-              <View style={[styles.cardIcon, { backgroundColor: colors.primaryLight }]}>
-                <Text style={[styles.cardIconText, { color: colors.primary }]}>
-                  🚢
-                </Text>
+              <View style={[styles.cleanCardIcon, { backgroundColor: colors.primaryLight }]}>
+                <Text style={[styles.cardIconText]}>🚢</Text>
               </View>
-              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              <Text style={[styles.cleanCardTitle, { color: colors.textPrimary }]}>
                 EXPORT
               </Text>
-              <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+              <Text style={[styles.cleanCardDescription, { color: colors.textSecondary }]}>
                 International shipments and export orders
               </Text>
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Local Order Type Card */}
+          {/* Local Order Type Card - Clean Design */}
           <Animated.View style={{ transform: [{ scale: scaleAnim2 }] }}>
             <TouchableOpacity
               style={[
-                styles.modernOrderCard,
+                styles.cleanOrderCard,
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
@@ -162,15 +180,13 @@ const OrderTypeScreen = ({ depot, onOrderTypeSelected, onBack }: OrderTypeScreen
               onPress={() => handleOrderTypePress('Local')}
               activeOpacity={0.8}
             >
-              <View style={[styles.cardIcon, { backgroundColor: colors.secondaryLight }]}>
-                <Text style={[styles.cardIconText, { color: colors.secondary }]}>
-                  🚛
-                </Text>
+              <View style={[styles.cleanCardIcon, { backgroundColor: colors.secondaryLight }]}>
+                <Text style={[styles.cardIconText]}>🚛</Text>
               </View>
-              <Text style={[styles.cardTitle, { color: colors.textPrimary }]}>
+              <Text style={[styles.cleanCardTitle, { color: colors.textPrimary }]}>
                 LOCAL
               </Text>
-              <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+              <Text style={[styles.cleanCardDescription, { color: colors.textSecondary }]}>
                 Domestic deliveries and local orders
               </Text>
             </TouchableOpacity>
@@ -221,7 +237,8 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     opacity: 0.8,
   },
-  modernOrderCard: {
+  // Clean, Simple Card Design
+  cleanOrderCard: {
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 32,
@@ -231,34 +248,43 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 6,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 6,
   },
-  cardIcon: {
+  cleanCardIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   cardIconText: {
     fontSize: 32,
   },
-  cardTitle: {
-    fontSize: 28,
-    fontWeight: '800',
+  cleanCardTitle: {
+    fontSize: 24,
+    fontWeight: '700',
     marginBottom: 12,
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
-  cardDescription: {
+  cleanCardDescription: {
     fontSize: 16,
     textAlign: 'center',
     lineHeight: 22,
     opacity: 0.7,
+    fontWeight: '400',
   },
 });
 

@@ -11,18 +11,24 @@ import {
   Alert,
   Animated,
   Dimensions,
+  BackHandler,
+  AppState,
+  AppStateStatus,
 } from 'react-native';
 import { qmsApi } from '../api/client';
 import { useTheme } from '../theme/ThemeContext';
 import ModernHeader from '../components/ModernHeader';
 import { SimpleGradient } from '../components/SimpleGradient';
 import LoadingScreen from '../components/LoadingScreen';
+import GlassCard from '../components/GlassCard';
 
 interface DetailedQueueScreenProps {
   orderType: 'Export' | 'Local';
   broadqueueId: string;
   depot: string;
   onBack: () => void;
+  criteria?: string;
+  productInfo?: string | { description: string };
 }
 
 interface DetailedQueueItem {
@@ -43,6 +49,8 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
   broadqueueId,
   depot,
   onBack,
+  criteria,
+  productInfo,
 }) => {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
@@ -50,10 +58,13 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
   const [filteredQueues, setFilteredQueues] = useState<DetailedQueueItem[]>([]);
   const [searchText, setSearchText] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
 
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
+  const bannerHeight = useRef(new Animated.Value(1)).current;
+  const scrollY = useRef(0).current;
 
   // Load detailed queue data
   useEffect(() => {
@@ -77,6 +88,40 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
       ]).start();
     }
   }, [isLoading]);
+
+  // Handle app state changes - refresh data when app comes to foreground
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'active') {
+        console.log('App became active, refreshing detailed queue data...');
+        loadDetailedQueues();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  // Handle Android back button
+  useEffect(() => {
+    const backAction = () => {
+      if (onBack) {
+        onBack();
+        return true; // Prevent default behavior
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [onBack]);
 
   const loadDetailedQueues = async () => {
     try {
@@ -108,6 +153,28 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
     setRefreshing(true);
     await loadDetailedQueues();
     setRefreshing(false);
+  };
+
+  // Handle scroll to hide/show banner
+  const handleScroll = (event: any) => {
+    const currentOffset = event.nativeEvent.contentOffset.y;
+    
+    // Hide banner when scrolling down, show when scrolling up
+    if (currentOffset > 50 && showBanner) {
+      setShowBanner(false);
+      Animated.timing(bannerHeight, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    } else if (currentOffset <= 50 && !showBanner) {
+      setShowBanner(true);
+      Animated.timing(bannerHeight, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
   };
 
   // Filter queues based on search text
@@ -153,14 +220,11 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
   // Render individual queue item with compact original QMS design
   const renderQueueItem = React.useCallback(({ item, index }: { item: DetailedQueueItem; index: number }) => {
     return (
-      <View style={[
-        styles.originalQueueCard,
-        { 
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-          borderWidth: 1,
-        }
-      ]}>
+      <GlassCard
+        style={styles.originalQueueCard}
+        intensity={70}
+        padding={0}
+      >
         {/* Queue Number Header */}
         <View style={[
           styles.originalQueueHeader, 
@@ -214,7 +278,7 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
             <Text style={[styles.originalInfoText, { color: colors.textPrimary }]}>{item.time.date}</Text>
           </View>
         </View>
-      </View>
+      </GlassCard>
     );
   }, [colors]);
 
@@ -227,6 +291,17 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
     offset: 180 * index + (index * 8), // Height + margin
     index,
   }), []);
+
+  // Helper function to format product info
+  const getProductDisplay = () => {
+    if (typeof productInfo === 'string') {
+      return productInfo;
+    }
+    if (typeof productInfo === 'object' && productInfo?.description) {
+      return productInfo.description;
+    }
+    return 'Product Information';
+  };
 
   if (isLoading) {
     return (
@@ -245,17 +320,17 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
         colors={[colors.primary, colors.primaryDark]}
         style={styles.gradientBackground}
       >
-        {/* Modern Header with Back Button */}
+        {/* Compact Header with Back Button */}
         <ModernHeader
           title={`${depot.toUpperCase()} - ${orderType}`}
           subtitle="Detailed Queue Information"
           onBack={onBack}
         />
 
-        {/* Content Container */}
+        {/* Content Container with More Room */}
         <Animated.View 
           style={[
-            styles.modernContentContainer,
+            styles.optimizedContentContainer,
             {
               backgroundColor: colors.background,
               borderColor: colors.border,
@@ -264,19 +339,37 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
             }
           ]}
         >
-          {/* Search Bar */}
-          <View style={[styles.modernSearchContainer, { backgroundColor: colors.surface }]}>
+          {/* Collapsible Search Bar */}
+          <View style={[styles.compactSearchContainer, { backgroundColor: colors.surface }]}>
             <Text style={[styles.searchIcon, { color: colors.primary }]}>🔍</Text>
             <TextInput
-              style={[styles.searchInput, { color: colors.textPrimary }]}
-              placeholder="Search vehicles, drivers, companies..."
+              style={[styles.compactSearchInput, { color: colors.textPrimary }]}
+              placeholder="Search queues..."
               placeholderTextColor={colors.textSecondary}
               value={searchText}
               onChangeText={setSearchText}
             />
           </View>
 
-          {/* Queue List */}
+          {/* Compact Info Note: Title + Product only */}
+          {(criteria || productInfo) && (
+            <View
+              style={[
+                styles.infoNote,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                },
+              ]}
+            >
+              <Text style={[styles.infoNoteTitle, { color: colors.primary }]}>Detailed Queue Info</Text>
+              {productInfo && (
+                <Text style={[styles.infoNoteProduct, { color: colors.textPrimary }]}>📦 Product: {getProductDisplay()}</Text>
+              )}
+            </View>
+          )}
+
+          {/* Optimized Queue List with More Space */}
           <FlatList
             data={filteredQueues}
             renderItem={renderQueueItem}
@@ -288,7 +381,9 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
             updateCellsBatchingPeriod={50}
             initialNumToRender={8}
             windowSize={10}
-            contentContainerStyle={styles.listContainer}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            contentContainerStyle={styles.optimizedListContainer}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
@@ -299,10 +394,10 @@ const DetailedQueueScreen: React.FC<DetailedQueueScreenProps> = React.memo(({
             }
           />
 
-          {/* Modern Count Footer */}
-          <View style={[styles.modernCountFooter, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.modernCountText, { color: colors.textPrimary }]}>
-              {filteredQueues.length} of {detailedQueues.length} detailed queues
+          {/* Compact Count Footer - Only Shows When Not Scrolling */}
+          <View style={[styles.compactCountFooter, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Text style={[styles.compactCountText, { color: colors.textSecondary }]}>
+              {filteredQueues.length} of {detailedQueues.length} queues
             </Text>
           </View>
         </Animated.View>
@@ -331,6 +426,143 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  // Optimized Content Container - More Room for Cards
+  optimizedContentContainer: {
+    flex: 1,
+    marginTop: 15, // Reduced from 20
+    borderTopLeftRadius: 24, // Reduced from 32 
+    borderTopRightRadius: 24, // Reduced from 32
+    paddingTop: 15, // Reduced from 30
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  // Compact Search Container
+  compactSearchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16, // Reduced from 20
+    marginBottom: 12, // Reduced from 20
+    borderRadius: 12, // Reduced from 16
+    paddingHorizontal: 12, // Reduced from 16
+    paddingVertical: 8, // Reduced from 16
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  searchIcon: {
+    fontSize: 16, // Reduced from 20
+    marginRight: 8, // Reduced from 12
+  },
+  compactSearchInput: {
+    flex: 1,
+    fontSize: 14, // Reduced from 16
+    fontWeight: '500',
+  },
+  // Category Information Banner
+  categoryBanner: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+    overflow: 'hidden', // Ensure content clips when height animates
+  },
+  categoryIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  categoryIcon: {
+    fontSize: 24,
+  },
+  categoryInfoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  categoryLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  categoryTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  categoryProduct: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  // Optimized List Container - More Space for Cards
+  optimizedListContainer: {
+    paddingBottom: 50, // Reduced from 100
+    paddingHorizontal: 8, // Reduced padding
+  },
+  // Compact Count Footer
+  compactCountFooter: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 8, // Reduced from 20
+    borderTopWidth: 1,
+    borderTopLeftRadius: 12, // Reduced from 20
+    borderTopRightRadius: 12, // Reduced from 20
+  },
+  compactCountText: {
+    fontSize: 12, // Reduced from 14
+    fontWeight: '400', // Lighter weight
+    textAlign: 'center',
+    opacity: 0.8,
+  },
+  // Compact Info Note Styles
+  infoNote: {
+    borderWidth: 1,
+    borderRadius: 10,
+    marginHorizontal: 16,
+    marginBottom: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  infoNoteTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  infoNoteProduct: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  
+  // Legacy styles
   modernContentContainer: {
     flex: 1,
     marginTop: 20,
@@ -363,10 +595,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  searchIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
   searchInput: {
     flex: 1,
     fontSize: 16,
@@ -391,46 +619,47 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   
-  // Compact Original QMS Card Styles
+  // Ultra-Compact Queue Card Styles for Maximum Visibility
   originalQueueCard: {
-    marginHorizontal: 16,
-    marginVertical: 4, // Very compact spacing
+    marginHorizontal: 12, // Reduced from 16
+    marginVertical: 3, // Reduced from 4
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1, // Reduced shadow
     shadowRadius: 2,
     elevation: 2,
   },
   originalQueueHeader: {
     alignItems: 'center',
-    paddingVertical: 8, // Very compact
+    paddingVertical: 6, // Reduced from 8
     borderBottomWidth: 1,
   },
   originalQueueNumber: {
-    fontSize: 18, // Compact size
+    fontSize: 16, // Reduced from 18
     fontWeight: 'bold',
   },
   originalCardContent: {
-    padding: 8, // Very compact
+    padding: 6, // Reduced from 8
   },
   originalInfoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 2, // Very tight spacing
+    paddingVertical: 1, // Reduced from 2
   },
   originalIcon: {
-    fontSize: 14, // Smaller icons
-    marginRight: 8,
-    width: 20,
+    fontSize: 12, // Reduced from 14
+    marginRight: 6, // Reduced from 8
+    width: 16, // Reduced from 20
     textAlign: 'center',
   },
   originalInfoText: {
-    fontSize: 12, // Compact text
+    fontSize: 11, // Reduced from 12
     flex: 1,
+    lineHeight: 14, // Added for better readability
   },
 });
 

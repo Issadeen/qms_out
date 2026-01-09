@@ -157,7 +157,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({
           ]}
         >
           <Text style={[styles.footerText, { color: 'rgba(255,255,255,0.7)' }]}>
-            Powered by React Native
+            Powered by Issaerium
           </Text>
         </Animated.View>
       </LinearGradient>

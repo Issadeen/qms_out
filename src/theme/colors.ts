@@ -38,6 +38,7 @@ export const Colors = {
     errorLight: '#ffcdd2',
     info: '#2196f3',
     infoLight: '#64b5f6',
+    disabled: '#e2e8f0',       // Disabled state color
     
     // Glassmorphism
     glass: 'rgba(220, 20, 60, 0.1)',      // KPC red glassmorphism
@@ -87,6 +88,7 @@ export const Colors = {
     errorLight: '#FF6B6B',
     info: '#42a5f5',
     infoLight: '#64b5f6',
+    disabled: '#475569',       // Disabled state color for dark mode
     
     // Glassmorphism
     glass: 'rgba(220, 20, 60, 0.08)',     // Crimson red glassmorphism for dark mode

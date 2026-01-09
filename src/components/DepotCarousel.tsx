@@ -23,6 +23,7 @@ interface DepotCarouselProps {
   selectedDepot: string;
   onDepotSelect: (depotId: string) => void;
   onConfirm: () => void;
+  onBack?: () => void;
 }
 
 const DepotCarousel: React.FC<DepotCarouselProps> = ({
@@ -30,6 +31,7 @@ const DepotCarousel: React.FC<DepotCarouselProps> = ({
   selectedDepot,
   onDepotSelect,
   onConfirm,
+  onBack,
 }) => {
   const { colors } = useTheme();
   const scrollRef = useRef<ScrollView>(null);
@@ -276,6 +278,15 @@ const DepotCarousel: React.FC<DepotCarouselProps> = ({
       >
       {/* Header */}
       <View style={styles.header}>
+        {/* Back Button */}
+        {onBack && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onBack}
+          >
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        )}
         
         <Text style={[styles.title, { color: colors.textInverse }]}>
           Select Your Depot
@@ -591,6 +602,23 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.7)',
     textAlign: 'center',
     fontWeight: '500',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 0,
+    left: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    zIndex: 10,
+  },
+  backButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.9)',
   },
 });
 

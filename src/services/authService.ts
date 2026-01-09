@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { qmsApi } from '../api/client';
+import telemetry from './telemetryService';
 
 // Keys for secure storage
 const CREDENTIALS_KEY = 'qms_credentials';
@@ -141,8 +142,9 @@ class AuthService {
 
   /**
    * Authenticate with biometrics
+   * Returns the raw LocalAuthentication result so callers can decide how to handle cancellations vs errors
    */
-  async authenticateWithBiometric(): Promise<boolean> {
+  async authenticateWithBiometric(): Promise<any> {
     try {
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: 'Authenticate to access QMS\nUse your fingerprint or face to login',
@@ -150,10 +152,14 @@ class AuthService {
         disableDeviceFallback: false,
       });
 
-      return result.success;
+  // Log telemetry
+  try { telemetry.logEvent('biometric_attempt', { success: result.success, ...(result as any).error ? { error: (result as any).error } : {} }); } catch(e){}
+  return result; // { success: boolean, error?: string }
     } catch (error) {
       console.error('Biometric authentication error:', error);
-      return false;
+      // Log exception as telemetry and return a failure object
+      try { telemetry.logEvent('biometric_exception', { details: String(error) }); } catch(e){}
+      return { success: false, error: 'exception', details: String(error) };
     }
   }
 
@@ -172,8 +178,13 @@ class AuthService {
       const biometricAvailable = await this.isBiometricAvailable();
 
       if (biometricEnabled && biometricAvailable) {
-        const biometricSuccess = await this.authenticateWithBiometric();
-        if (!biometricSuccess) {
+        const biometricResult = await this.authenticateWithBiometric();
+
+        // If biometric authentication was not successful, do not clear stored credentials here.
+        // A user cancel or transient error should simply abort auto-login and let the user try manually.
+        if (!biometricResult || biometricResult.success !== true) {
+          console.log('Biometric auth did not succeed, aborting auto-login (no credential clearing)');
+          try { telemetry.logEvent('biometric_auto_abort', { result: biometricResult }); } catch(e){}
           return { success: false };
         }
       }
@@ -201,7 +212,7 @@ class AuthService {
       }
     } catch (error) {
       console.error('Auto-login error:', error);
-      await this.clearCredentials();
+      // Do NOT clear stored credentials on unexpected errors during auto-login; allow the user to retry.
       return { success: false };
     }
   }
